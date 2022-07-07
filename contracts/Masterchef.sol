@@ -44,9 +44,9 @@ contract MasterChef is Ownable, ReentrancyGuard {
   }
 
   // The Saitama TOKEN!
-  ISaitama public Saitama;
+  ISaitama public immutable Saitama;
   // Reward Wallet address
-  address RewardWalletAddress;
+  address public immutable RewardWalletAddress;
   // Dev address.
   address public devAddress;
   // Deposit Fee address
@@ -131,7 +131,7 @@ contract MasterChef is Ownable, ReentrancyGuard {
     uint16 _depositFeeBP,
     uint256 _harvestInterval,
     bool _withUpdate
-  ) public onlyOwner {
+  ) external onlyOwner {
     require(
       LpPool[_lpToken] == false,
       "Can't add more than one pool for the same token"
@@ -177,7 +177,7 @@ contract MasterChef is Ownable, ReentrancyGuard {
     uint16 _depositFeeBP,
     uint256 _harvestInterval,
     bool _withUpdate
-  ) public onlyOwner {
+  ) external onlyOwner {
     require(_depositFeeBP <= 10000, "set: invalid deposit fee basis points");
     require(
       _harvestInterval <= MAXIMUM_HARVEST_INTERVAL,
@@ -283,7 +283,7 @@ contract MasterChef is Ownable, ReentrancyGuard {
   }
 
   // Deposit LP tokens to MasterChef for Saitama allocation.
-  function deposit(uint256 _pid, uint256 _amount) public nonReentrant {
+  function deposit(uint256 _pid, uint256 _amount) external nonReentrant {
     PoolInfo storage pool = poolInfo[_pid];
     UserInfo storage user = userInfo[_pid][msg.sender];
     updatePool(_pid);
@@ -316,7 +316,7 @@ contract MasterChef is Ownable, ReentrancyGuard {
   }
 
   // Withdraw LP tokens from MasterChef.
-  function withdraw(uint256 _pid, uint256 _amount) public nonReentrant {
+  function withdraw(uint256 _pid, uint256 _amount) external nonReentrant {
     PoolInfo storage pool = poolInfo[_pid];
     UserInfo storage user = userInfo[_pid][msg.sender];
     require(user.amount >= _amount, "withdraw: not good");
@@ -331,7 +331,7 @@ contract MasterChef is Ownable, ReentrancyGuard {
   }
 
   // Withdraw without caring about rewards. EMERGENCY ONLY.
-  function emergencyWithdraw(uint256 _pid) public nonReentrant {
+  function emergencyWithdraw(uint256 _pid) external nonReentrant {
     PoolInfo storage pool = poolInfo[_pid];
     UserInfo storage user = userInfo[_pid][msg.sender];
     uint256 amount = user.amount;
@@ -385,20 +385,20 @@ contract MasterChef is Ownable, ReentrancyGuard {
   }
 
   // Update dev address by the previous dev.
-  function setDevAddress(address _devAddress) public {
+  function setDevAddress(address _devAddress) external {
     require(msg.sender == devAddress, "setDevAddress: FORBIDDEN");
     require(_devAddress != address(0), "setDevAddress: ZERO");
     devAddress = _devAddress;
   }
 
-  function setFeeAddress(address _feeAddress) public {
+  function setFeeAddress(address _feeAddress) external {
     require(msg.sender == feeAddress, "setFeeAddress: FORBIDDEN");
     require(_feeAddress != address(0), "setFeeAddress: ZERO");
     feeAddress = _feeAddress;
   }
 
   // Saita has to add hidden dummy pools in order to alter the emission, here we make it simple and transparent to all.
-  function updateEmissionRate(uint256 _SaitamaPerBlock) public onlyOwner {
+  function updateEmissionRate(uint256 _SaitamaPerBlock) external onlyOwner {
     massUpdatePools();
     emit EmissionRateUpdated(msg.sender, SaitamaPerBlock, _SaitamaPerBlock);
     SaitamaPerBlock = _SaitamaPerBlock;
