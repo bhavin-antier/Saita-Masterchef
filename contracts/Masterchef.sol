@@ -172,6 +172,10 @@ contract MasterChef is Ownable, ReentrancyGuard {
 
   //Update the Reward Wallet Address
   function updateRewardWallet(address _rewardWalletAddress) external onlyOwner {
+    require(
+      _rewardWalletAddress != address(0),
+      "Reward Wallet Address Can't be Zero"
+    );
     RewardWalletAddress = _rewardWalletAddress;
   }
 
