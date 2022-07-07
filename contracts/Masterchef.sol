@@ -46,7 +46,7 @@ contract MasterChef is Ownable, ReentrancyGuard {
   // The Saitama TOKEN!
   ISaitama public immutable Saitama;
   // Reward Wallet address
-  address public immutable RewardWalletAddress;
+  address public RewardWalletAddress;
   // Dev address.
   address public devAddress;
   // Deposit Fee address
@@ -168,6 +168,11 @@ contract MasterChef is Ownable, ReentrancyGuard {
       _harvestInterval,
       _withUpdate
     );
+  }
+
+  //Update the Reward Wallet Address
+  function updateRewardWallet(address _rewardWalletAddress) external onlyOwner {
+    RewardWalletAddress = _rewardWalletAddress;
   }
 
   // Update the given pool's Saitama allocation point and deposit fee. Can only be called by the owner.
